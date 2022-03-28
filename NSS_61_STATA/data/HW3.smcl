@@ -1,0 +1,525 @@
+{smcl}
+{txt}{sf}{ul off}{.-}
+      name:  {res}HW3
+       {txt}log:  {res}D:\MA_Econ\Sem-2\Ecotrix\Assignment\NSS 61\data\HW3.smcl
+  {txt}log type:  {res}smcl
+ {txt}opened on:  {res}16 Mar 2022, 22:04:25
+
+{com}. 
+. cd "D:\College\Spring 2022 (MA)\Econometrics\Assignment\NSS 61\NSS 61\data"
+{err}unable to change to D:\College\Spring 2022 (MA)\Econometrics\Assignment\NSS 61\NSS 61\data
+{txt}{search r(170), local:r(170);}
+
+{com}. 
+. 
+. 
+. *part (i)
+
+. 
+. use "level01.dta" , clear
+
+. 
+. save "level01_id.dta", replace //saving the dataset to merge with individual data
+{err}option {bf:/} not allowed
+{txt}{search r(198), local:r(198);}
+
+{com}. 
+. use "level03.dta" , clear
+
+. 
+. merge m:1 common_id using "level01_id.dta"
+{res}{err}{p 0 4 2}
+variable{err} common_id
+does not uniquely identify observations in the
+using data
+{p_end}
+{txt}{search r(459), local:r(459);}
+
+{com}. 
+. destring sex, replace
+{txt}sex: all characters numeric; {res}replaced {txt}as {res}byte
+{txt}(1 missing value generated)
+{res}
+{com}. 
+. label define sex 1 "Male" 2 "Female", replace
+
+. 
+. label values sex sex
+
+. 
+. destring social_group, replace
+{err}variable {bf}social_group{sf} not found
+{txt}{search r(111), local:r(111);}
+
+{com}. 
+. label define socgrp 1 "Scheduled Tribe" 2 "Scheduled Caste" 3 "Other Backward Class" 9 "General", replace
+
+. 
+. label values social_group socgrp
+{err}variable {bf}social_group{sf} not found
+{txt}{search r(111), local:r(111);}
+
+{com}. 
+. 
+. 
+. tab sex
+
+        {txt}sex {c |}      Freq.     Percent        Cum.
+{hline 12}{c +}{hline 35}
+       Male {c |}{res}    308,627       51.20       51.20
+{txt}     Female {c |}{res}    294,205       48.80      100.00
+{txt}{hline 12}{c +}{hline 35}
+      Total {c |}{res}    602,832      100.00
+
+{com}. 
+. tab social_group
+{err}variable {bf}social_group{sf} not found
+{txt}{search r(111), local:r(111);}
+
+{com}. 
+. 
+. 
+. *part (ii)
+
+. 
+. tab social_group sex, cell
+{err}variable {bf}social_group{sf} not found
+{txt}{search r(111), local:r(111);}
+
+{com}. 
+. 
+. 
+. *part (iii)
+
+. 
+. use "level01.dta" , clear
+
+. 
+. 
+. 
+. destring mpce_30_days hh_size , replace
+{txt}mpce_30_days: all characters numeric; {res}replaced {txt}as {res}long
+{txt}hh_size: all characters numeric; {res}replaced {txt}as {res}byte
+
+{com}. 
+. *the range is 1 to 99999999 for MPCE, the upper bound is extremely high and seems like an erroneous entry
+
+. 
+. *we can use the following code to drop it (if we want to run analysis without it
+
+. 
+. *drop if mpce_30_days==99999999
+
+. 
+. 
+. 
+. gen state = substr(state_region,1,2) //generate state codes
+{err}unknown function ()
+{txt}{search r(133), local:r(133);}
+
+{com}. 
+. destring state, replace
+{txt}state_region: all characters numeric; {res}replaced {txt}as {res}int
+
+{com}. 
+. 
+. 
+. gen pcmpce=mpce_30_days/hh_size
+
+. 
+. egen pcmpce_mean = mean(pcmpce) , by(state)
+
+. 
+. mean pcmpce , over(state)
+{res}
+{txt}{col 1}Mean estimation{col 49}{lalign 13:Number of obs}{col 62} = {res}{ralign 7:124,680}
+
+{txt}{hline 22}{c TT}{hline 11}{hline 11}{hline 14}{hline 12}
+{col 23}{c |}       Mean{col 35}   Std. err.{col 47}     [95% con{col 60}f. interval]
+{hline 22}{c +}{hline 11}{hline 11}{hline 14}{hline 12}
+c.pcmpce@state_region {c |}
+{space 17} 11  {c |}{col 23}{res}{space 2}  1132.42{col 35}{space 2} 22.93941{col 46}{space 5} 1087.459{col 60}{space 3} 1177.381
+{txt}{space 17} 12  {c |}{col 23}{res}{space 2} 801.4424{col 35}{space 2} 23.75828{col 46}{space 5} 754.8766{col 60}{space 3} 848.0083
+{txt}{space 17} 13  {c |}{col 23}{res}{space 2} 784.0663{col 35}{space 2} 10.16495{col 46}{space 5} 764.1431{col 60}{space 3} 803.9894
+{txt}{space 17} 21  {c |}{col 23}{res}{space 2} 987.9075{col 35}{space 2} 14.85858{col 46}{space 5}  958.785{col 60}{space 3}  1017.03
+{txt}{space 17} 31  {c |}{col 23}{res}{space 2} 1136.092{col 35}{space 2} 15.18799{col 46}{space 5} 1106.323{col 60}{space 3}  1165.86
+{txt}{space 17} 32  {c |}{col 23}{res}{space 2} 968.4351{col 35}{space 2} 16.48899{col 46}{space 5} 936.1169{col 60}{space 3} 1000.753
+{txt}{space 17} 41  {c |}{col 23}{res}{space 2} 1683.383{col 35}{space 2} 67.01204{col 46}{space 5} 1552.041{col 60}{space 3} 1814.726
+{txt}{space 17} 51  {c |}{col 23}{res}{space 2}  823.633{col 35}{space 2} 13.25833{col 46}{space 5} 797.6469{col 60}{space 3} 849.6191
+{txt}{space 17} 61  {c |}{col 23}{res}{space 2} 1044.037{col 35}{space 2} 18.23994{col 46}{space 5} 1008.287{col 60}{space 3} 1079.787
+{txt}{space 17} 62  {c |}{col 23}{res}{space 2} 830.5802{col 35}{space 2} 16.06506{col 46}{space 5} 799.0929{col 60}{space 3} 862.0674
+{txt}{space 17} 71  {c |}{col 23}{res}{space 2}  1667.52{col 35}{space 2} 37.02311{col 46}{space 5} 1594.956{col 60}{space 3} 1740.085
+{txt}{space 17} 81  {c |}{col 23}{res}{space 2} 755.5176{col 35}{space 2} 12.35151{col 46}{space 5} 731.3088{col 60}{space 3} 779.7263
+{txt}{space 17} 82  {c |}{col 23}{res}{space 2} 779.5502{col 35}{space 2} 15.33517{col 46}{space 5} 749.4936{col 60}{space 3} 809.6069
+{txt}{space 17} 83  {c |}{col 23}{res}{space 2} 773.5295{col 35}{space 2} 27.94405{col 46}{space 5} 718.7597{col 60}{space 3} 828.2994
+{txt}{space 17} 84  {c |}{col 23}{res}{space 2} 790.3295{col 35}{space 2}   26.291{col 46}{space 5} 738.7996{col 60}{space 3} 841.8594
+{txt}{space 17} 91  {c |}{col 23}{res}{space 2} 710.2242{col 35}{space 2} 9.051467{col 46}{space 5} 692.4835{col 60}{space 3} 727.9649
+{txt}{space 17} 92  {c |}{col 23}{res}{space 2} 698.4843{col 35}{space 2} 14.54609{col 46}{space 5} 669.9742{col 60}{space 3} 726.9943
+{txt}{space 17} 93  {c |}{col 23}{res}{space 2} 613.3683{col 35}{space 2} 6.638152{col 46}{space 5} 600.3576{col 60}{space 3} 626.3789
+{txt}{space 17} 94  {c |}{col 23}{res}{space 2} 638.0574{col 35}{space 2} 21.49084{col 46}{space 5} 595.9357{col 60}{space 3} 680.1791
+{txt}{space 17}101  {c |}{col 23}{res}{space 2} 563.4506{col 35}{space 2} 8.782972{col 46}{space 5} 546.2361{col 60}{space 3} 580.6651
+{txt}{space 17}102  {c |}{col 23}{res}{space 2} 536.6198{col 35}{space 2} 6.622957{col 46}{space 5} 523.6389{col 60}{space 3} 549.6007
+{txt}{space 17}111  {c |}{col 23}{res}{space 2} 872.0922{col 35}{space 2} 15.82971{col 46}{space 5} 841.0662{col 60}{space 3} 903.1182
+{txt}{space 17}121  {c |}{col 23}{res}{space 2} 1229.085{col 35}{space 2} 183.9972{col 46}{space 5} 868.4537{col 60}{space 3} 1589.717
+{txt}{space 17}131  {c |}{col 23}{res}{space 2}  1221.29{col 35}{space 2} 16.02129{col 46}{space 5} 1189.888{col 60}{space 3} 1252.691
+{txt}{space 17}141  {c |}{col 23}{res}{space 2} 753.1049{col 35}{space 2} 7.106198{col 46}{space 5} 739.1769{col 60}{space 3}  767.033
+{txt}{space 17}142  {c |}{col 23}{res}{space 2} 581.8102{col 35}{space 2} 7.767844{col 46}{space 5} 566.5853{col 60}{space 3}  597.035
+{txt}{space 17}151  {c |}{col 23}{res}{space 2} 27306.47{col 35}{space 2} 26136.35{col 46}{space 5}-23920.33{col 60}{space 3} 78533.27
+{txt}{space 17}161  {c |}{col 23}{res}{space 2} 682.0373{col 35}{space 2} 10.86366{col 46}{space 5} 660.7447{col 60}{space 3} 703.3299
+{txt}{space 17}171  {c |}{col 23}{res}{space 2} 889.6759{col 35}{space 2} 12.15415{col 46}{space 5}  865.854{col 60}{space 3} 913.4978
+{txt}{space 17}181  {c |}{col 23}{res}{space 2}  776.715{col 35}{space 2} 29.69775{col 46}{space 5} 718.5079{col 60}{space 3} 834.9221
+{txt}{space 17}182  {c |}{col 23}{res}{space 2} 677.2552{col 35}{space 2} 8.340305{col 46}{space 5} 660.9083{col 60}{space 3} 693.6021
+{txt}{space 17}183  {c |}{col 23}{res}{space 2} 612.0712{col 35}{space 2}  17.8035{col 46}{space 5} 577.1767{col 60}{space 3} 646.9658
+{txt}{space 17}191  {c |}{col 23}{res}{space 2} 677.6913{col 35}{space 2} 15.79734{col 46}{space 5} 646.7287{col 60}{space 3} 708.6538
+{txt}{space 17}192  {c |}{col 23}{res}{space 2} 601.3442{col 35}{space 2} 10.00855{col 46}{space 5} 581.7276{col 60}{space 3} 620.9608
+{txt}{space 17}193  {c |}{col 23}{res}{space 2} 936.3007{col 35}{space 2} 12.90367{col 46}{space 5} 911.0097{col 60}{space 3} 961.5917
+{txt}{space 17}194  {c |}{col 23}{res}{space 2} 701.6744{col 35}{space 2} 13.22311{col 46}{space 5} 675.7573{col 60}{space 3} 727.5915
+{txt}{space 17}201  {c |}{col 23}{res}{space 2} 631.4784{col 35}{space 2} 8.209857{col 46}{space 5} 615.3872{col 60}{space 3} 647.5696
+{txt}{space 17}211  {c |}{col 23}{res}{space 2}  607.075{col 35}{space 2} 46.32538{col 46}{space 5}  516.278{col 60}{space 3} 697.8719
+{txt}{space 17}212  {c |}{col 23}{res}{space 2} 487.4489{col 35}{space 2} 13.14249{col 46}{space 5} 461.6899{col 60}{space 3}  513.208
+{txt}{space 17}213  {c |}{col 23}{res}{space 2} 513.3098{col 35}{space 2} 10.81421{col 46}{space 5} 492.1141{col 60}{space 3} 534.5055
+{txt}{space 17}221  {c |}{col 23}{res}{space 2} 643.2411{col 35}{space 2} 10.59562{col 46}{space 5} 622.4738{col 60}{space 3} 664.0083
+{txt}{space 17}231  {c |}{col 23}{res}{space 2} 613.2981{col 35}{space 2}  18.2979{col 46}{space 5} 577.4345{col 60}{space 3} 649.1617
+{txt}{space 17}232  {c |}{col 23}{res}{space 2} 627.7072{col 35}{space 2} 17.67054{col 46}{space 5} 593.0733{col 60}{space 3} 662.3412
+{txt}{space 17}233  {c |}{col 23}{res}{space 2} 779.8307{col 35}{space 2} 18.27517{col 46}{space 5} 744.0116{col 60}{space 3} 815.6497
+{txt}{space 17}234  {c |}{col 23}{res}{space 2} 581.9011{col 35}{space 2} 14.20478{col 46}{space 5} 554.0599{col 60}{space 3} 609.7422
+{txt}{space 17}235  {c |}{col 23}{res}{space 2} 619.9769{col 35}{space 2} 17.52896{col 46}{space 5} 585.6205{col 60}{space 3} 654.3334
+{txt}{space 17}236  {c |}{col 23}{res}{space 2} 621.2046{col 35}{space 2} 13.36278{col 46}{space 5} 595.0137{col 60}{space 3} 647.3954
+{txt}{space 17}241  {c |}{col 23}{res}{space 2} 860.7362{col 35}{space 2} 22.81751{col 46}{space 5} 816.0143{col 60}{space 3} 905.4582
+{txt}{space 17}242  {c |}{col 23}{res}{space 2}  1127.16{col 35}{space 2} 41.58466{col 46}{space 5} 1045.655{col 60}{space 3} 1208.665
+{txt}{space 17}243  {c |}{col 23}{res}{space 2} 1059.757{col 35}{space 2} 30.06013{col 46}{space 5}  1000.84{col 60}{space 3} 1118.675
+{txt}{space 17}244  {c |}{col 23}{res}{space 2} 692.4677{col 35}{space 2} 18.26016{col 46}{space 5}  656.678{col 60}{space 3} 728.2573
+{txt}{space 17}245  {c |}{col 23}{res}{space 2} 903.1025{col 35}{space 2} 26.90988{col 46}{space 5} 850.3596{col 60}{space 3} 955.8453
+{txt}{space 17}251  {c |}{col 23}{res}{space 2} 1285.922{col 35}{space 2} 68.75051{col 46}{space 5} 1151.172{col 60}{space 3} 1420.671
+{txt}{space 17}261  {c |}{col 23}{res}{space 2} 921.5091{col 35}{space 2} 45.00243{col 46}{space 5} 833.3052{col 60}{space 3} 1009.713
+{txt}{space 17}271  {c |}{col 23}{res}{space 2} 1546.301{col 35}{space 2} 30.77266{col 46}{space 5} 1485.987{col 60}{space 3} 1606.615
+{txt}{space 17}272  {c |}{col 23}{res}{space 2} 982.6641{col 35}{space 2} 20.23421{col 46}{space 5} 943.0054{col 60}{space 3} 1022.323
+{txt}{space 17}273  {c |}{col 23}{res}{space 2} 773.9142{col 35}{space 2}  18.1551{col 46}{space 5} 738.3305{col 60}{space 3} 809.4979
+{txt}{space 17}274  {c |}{col 23}{res}{space 2} 630.1092{col 35}{space 2} 10.73129{col 46}{space 5}  609.076{col 60}{space 3} 651.1423
+{txt}{space 17}275  {c |}{col 23}{res}{space 2} 829.8817{col 35}{space 2} 20.61322{col 46}{space 5} 789.4801{col 60}{space 3} 870.2832
+{txt}{space 17}276  {c |}{col 23}{res}{space 2} 761.3772{col 35}{space 2} 27.52512{col 46}{space 5} 707.4285{col 60}{space 3}  815.326
+{txt}{space 17}281  {c |}{col 23}{res}{space 2} 854.4459{col 35}{space 2} 12.86264{col 46}{space 5} 829.2354{col 60}{space 3} 879.6565
+{txt}{space 17}282  {c |}{col 23}{res}{space 2} 793.4278{col 35}{space 2} 11.11526{col 46}{space 5} 771.6421{col 60}{space 3} 815.2135
+{txt}{space 17}283  {c |}{col 23}{res}{space 2} 661.4729{col 35}{space 2} 20.63196{col 46}{space 5} 621.0346{col 60}{space 3} 701.9112
+{txt}{space 17}284  {c |}{col 23}{res}{space 2} 716.2028{col 35}{space 2} 25.06714{col 46}{space 5} 667.0717{col 60}{space 3}  765.334
+{txt}{space 17}291  {c |}{col 23}{res}{space 2} 1026.637{col 35}{space 2} 46.44128{col 46}{space 5} 935.6125{col 60}{space 3} 1117.661
+{txt}{space 17}292  {c |}{col 23}{res}{space 2} 900.6571{col 35}{space 2} 39.18316{col 46}{space 5} 823.8588{col 60}{space 3} 977.4554
+{txt}{space 17}293  {c |}{col 23}{res}{space 2} 1025.195{col 35}{space 2} 23.09397{col 46}{space 5}  979.931{col 60}{space 3} 1070.459
+{txt}{space 17}294  {c |}{col 23}{res}{space 2} 634.7278{col 35}{space 2} 11.07741{col 46}{space 5} 613.0163{col 60}{space 3} 656.4393
+{txt}{space 17}301  {c |}{col 23}{res}{space 2} 1161.671{col 35}{space 2} 36.96539{col 46}{space 5} 1089.219{col 60}{space 3} 1234.122
+{txt}{space 17}311  {c |}{col 23}{res}{space 2} 1223.882{col 35}{space 2} 63.29271{col 46}{space 5} 1099.829{col 60}{space 3} 1347.934
+{txt}{space 17}321  {c |}{col 23}{res}{space 2} 940.8059{col 35}{space 2}  17.7999{col 46}{space 5} 905.9184{col 60}{space 3} 975.6934
+{txt}{space 17}322  {c |}{col 23}{res}{space 2} 1360.297{col 35}{space 2} 25.44884{col 46}{space 5} 1310.418{col 60}{space 3} 1410.177
+{txt}{space 17}331  {c |}{col 23}{res}{space 2} 1020.954{col 35}{space 2}  19.4747{col 46}{space 5} 982.7838{col 60}{space 3} 1059.124
+{txt}{space 17}332  {c |}{col 23}{res}{space 2} 831.5161{col 35}{space 2} 15.28058{col 46}{space 5} 801.5664{col 60}{space 3} 861.4658
+{txt}{space 17}333  {c |}{col 23}{res}{space 2} 820.0672{col 35}{space 2} 13.38473{col 46}{space 5} 793.8334{col 60}{space 3} 846.3011
+{txt}{space 17}334  {c |}{col 23}{res}{space 2} 898.9297{col 35}{space 2} 17.52917{col 46}{space 5} 864.5729{col 60}{space 3} 933.2866
+{txt}{space 17}341  {c |}{col 23}{res}{space 2}   993.35{col 35}{space 2} 31.25853{col 46}{space 5} 932.0838{col 60}{space 3} 1054.616
+{txt}{space 17}351  {c |}{col 23}{res}{space 2} 1452.642{col 35}{space 2} 46.44638{col 46}{space 5} 1361.607{col 60}{space 3} 1543.676
+{txt}{hline 22}{c BT}{hline 11}{hline 11}{hline 14}{hline 12}
+
+{com}. 
+. 
+. 
+. preserve
+
+. 
+. duplicates drop state, force
+
+{p 0 4}{txt}Duplicates in terms of {res} state_region{p_end}
+
+{txt}(124,602 observations deleted)
+
+{com}. 
+. sort pcmpce_mean
+
+. 
+. list state pcmpce_mean if inrange(_n, _N - 4, _N) 
+{txt}
+     {c TLC}{hline 10}{c -}{hline 10}{c TRC}
+     {c |} {res}state_~n   pcmpce~n {txt}{c |}
+     {c LT}{hline 10}{c -}{hline 10}{c RT}
+ 74. {c |} {res}     351   1452.642 {txt}{c |}
+ 75. {c |} {res}     271   1546.301 {txt}{c |}
+ 76. {c |} {res}      71    1667.52 {txt}{c |}
+ 77. {c |} {res}      41   1683.383 {txt}{c |}
+ 78. {c |} {res}     151   27306.47 {txt}{c |}
+     {c BLC}{hline 10}{c -}{hline 10}{c BRC}
+
+{com}. 
+. list state pcmpce_mean
+{txt}
+     {c TLC}{hline 10}{c -}{hline 10}{c TRC}
+     {c |} {res}state_~n   pcmpce~n {txt}{c |}
+     {c LT}{hline 10}{c -}{hline 10}{c RT}
+  1. {c |} {res}     212   487.4489 {txt}{c |}
+  2. {c |} {res}     213   513.3098 {txt}{c |}
+  3. {c |} {res}     102   536.6198 {txt}{c |}
+  4. {c |} {res}     101   563.4506 {txt}{c |}
+  5. {c |} {res}     142   581.8102 {txt}{c |}
+     {c LT}{hline 10}{c -}{hline 10}{c RT}
+  6. {c |} {res}     234   581.9011 {txt}{c |}
+  7. {c |} {res}     192   601.3442 {txt}{c |}
+  8. {c |} {res}     211    607.075 {txt}{c |}
+  9. {c |} {res}     183   612.0712 {txt}{c |}
+ 10. {c |} {res}     231   613.2981 {txt}{c |}
+     {c LT}{hline 10}{c -}{hline 10}{c RT}
+ 11. {c |} {res}      93   613.3683 {txt}{c |}
+ 12. {c |} {res}     235   619.9769 {txt}{c |}
+ 13. {c |} {res}     236   621.2045 {txt}{c |}
+ 14. {c |} {res}     232   627.7072 {txt}{c |}
+ 15. {c |} {res}     274   630.1092 {txt}{c |}
+     {c LT}{hline 10}{c -}{hline 10}{c RT}
+ 16. {c |} {res}     201   631.4784 {txt}{c |}
+ 17. {c |} {res}     294   634.7278 {txt}{c |}
+ 18. {c |} {res}      94   638.0574 {txt}{c |}
+ 19. {c |} {res}     221   643.2411 {txt}{c |}
+ 20. {c |} {res}     283   661.4729 {txt}{c |}
+     {c LT}{hline 10}{c -}{hline 10}{c RT}
+ 21. {c |} {res}     182   677.2552 {txt}{c |}
+ 22. {c |} {res}     191   677.6913 {txt}{c |}
+ 23. {c |} {res}     161   682.0373 {txt}{c |}
+ 24. {c |} {res}     244   692.4677 {txt}{c |}
+ 25. {c |} {res}      92   698.4843 {txt}{c |}
+     {c LT}{hline 10}{c -}{hline 10}{c RT}
+ 26. {c |} {res}     194   701.6744 {txt}{c |}
+ 27. {c |} {res}      91   710.2242 {txt}{c |}
+ 28. {c |} {res}     284   716.2028 {txt}{c |}
+ 29. {c |} {res}     141   753.1049 {txt}{c |}
+ 30. {c |} {res}      81   755.5176 {txt}{c |}
+     {c LT}{hline 10}{c -}{hline 10}{c RT}
+ 31. {c |} {res}     276   761.3773 {txt}{c |}
+ 32. {c |} {res}      83   773.5295 {txt}{c |}
+ 33. {c |} {res}     273   773.9142 {txt}{c |}
+ 34. {c |} {res}     181    776.715 {txt}{c |}
+ 35. {c |} {res}      82   779.5502 {txt}{c |}
+     {c LT}{hline 10}{c -}{hline 10}{c RT}
+ 36. {c |} {res}     233   779.8307 {txt}{c |}
+ 37. {c |} {res}      13   784.0663 {txt}{c |}
+ 38. {c |} {res}      84   790.3295 {txt}{c |}
+ 39. {c |} {res}     282   793.4278 {txt}{c |}
+ 40. {c |} {res}      12   801.4424 {txt}{c |}
+     {c LT}{hline 10}{c -}{hline 10}{c RT}
+ 41. {c |} {res}     333   820.0672 {txt}{c |}
+ 42. {c |} {res}      51   823.6329 {txt}{c |}
+ 43. {c |} {res}     275   829.8817 {txt}{c |}
+ 44. {c |} {res}      62   830.5802 {txt}{c |}
+ 45. {c |} {res}     332   831.5161 {txt}{c |}
+     {c LT}{hline 10}{c -}{hline 10}{c RT}
+ 46. {c |} {res}     281   854.4459 {txt}{c |}
+ 47. {c |} {res}     241   860.7363 {txt}{c |}
+ 48. {c |} {res}     111   872.0922 {txt}{c |}
+ 49. {c |} {res}     171   889.6759 {txt}{c |}
+ 50. {c |} {res}     334   898.9297 {txt}{c |}
+     {c LT}{hline 10}{c -}{hline 10}{c RT}
+ 51. {c |} {res}     292   900.6571 {txt}{c |}
+ 52. {c |} {res}     245   903.1025 {txt}{c |}
+ 53. {c |} {res}     261   921.5092 {txt}{c |}
+ 54. {c |} {res}     193   936.3007 {txt}{c |}
+ 55. {c |} {res}     321   940.8059 {txt}{c |}
+     {c LT}{hline 10}{c -}{hline 10}{c RT}
+ 56. {c |} {res}      32   968.4351 {txt}{c |}
+ 57. {c |} {res}     272   982.6641 {txt}{c |}
+ 58. {c |} {res}      21   987.9075 {txt}{c |}
+ 59. {c |} {res}     341     993.35 {txt}{c |}
+ 60. {c |} {res}     331   1020.954 {txt}{c |}
+     {c LT}{hline 10}{c -}{hline 10}{c RT}
+ 61. {c |} {res}     293   1025.195 {txt}{c |}
+ 62. {c |} {res}     291   1026.637 {txt}{c |}
+ 63. {c |} {res}      61   1044.037 {txt}{c |}
+ 64. {c |} {res}     243   1059.757 {txt}{c |}
+ 65. {c |} {res}     242    1127.16 {txt}{c |}
+     {c LT}{hline 10}{c -}{hline 10}{c RT}
+ 66. {c |} {res}      11    1132.42 {txt}{c |}
+ 67. {c |} {res}      31   1136.092 {txt}{c |}
+ 68. {c |} {res}     301   1161.671 {txt}{c |}
+ 69. {c |} {res}     131    1221.29 {txt}{c |}
+ 70. {c |} {res}     311   1223.882 {txt}{c |}
+     {c LT}{hline 10}{c -}{hline 10}{c RT}
+ 71. {c |} {res}     121   1229.085 {txt}{c |}
+ 72. {c |} {res}     251   1285.922 {txt}{c |}
+ 73. {c |} {res}     322   1360.297 {txt}{c |}
+ 74. {c |} {res}     351   1452.642 {txt}{c |}
+ 75. {c |} {res}     271   1546.301 {txt}{c |}
+     {c LT}{hline 10}{c -}{hline 10}{c RT}
+ 76. {c |} {res}      71    1667.52 {txt}{c |}
+ 77. {c |} {res}      41   1683.383 {txt}{c |}
+ 78. {c |} {res}     151   27306.47 {txt}{c |}
+     {c BLC}{hline 10}{c -}{hline 10}{c BRC}
+
+{com}. 
+. restore
+
+. 
+. 
+. 
+. *part (iv)
+
+. 
+. xtile pcmpce_decile = pcmpce, nq(10)
+
+. 
+. egen pcmpce_decile_min = min(pcmpce) , by(pcmpce_decile)
+
+. 
+. preserve
+
+. 
+. duplicates drop pcmpce_decile , force
+
+{p 0 4}{txt}Duplicates in terms of {res} pcmpce_decile{p_end}
+
+{txt}(124,670 observations deleted)
+
+{com}. 
+. list pcmpce_decile_min 
+{txt}
+     {c TLC}{hline 10}{c TRC}
+     {c |} {res}pcmpc~in {txt}{c |}
+     {c LT}{hline 10}{c RT}
+  1. {c |} {res}  1544.2 {txt}{c |}
+  2. {c |} {res}1078.857 {txt}{c |}
+  3. {c |} {res}   854.6 {txt}{c |}
+  4. {c |} {res}623.0833 {txt}{c |}
+  5. {c |} {res}   719.2 {txt}{c |}
+     {c LT}{hline 10}{c RT}
+  6. {c |} {res}   546.8 {txt}{c |}
+  7. {c |} {res}416.3636 {txt}{c |}
+  8. {c |} {res}482.1429 {txt}{c |}
+  9. {c |} {res}344.4286 {txt}{c |}
+ 10. {c |} {res}      .2 {txt}{c |}
+     {c BLC}{hline 10}{c BRC}
+
+{com}. 
+. restore
+
+. 
+. destring common_id, replace
+{txt}common_id: all characters numeric; {res}replaced {txt}as {res}long
+
+{com}. 
+. 
+. 
+. save "level01_edited.dta", replace //saving the dataset to merge with individual data
+{err}option {bf:/} not allowed
+{txt}{search r(198), local:r(198);}
+
+{com}. 
+. 
+. 
+. *part (v)
+
+. 
+. use "level04.dta" , clear
+
+. 
+. merge 1:1 common_id person_srl_no using "level03.dta"
+{res}
+{txt}{col 5}Result{col 33}Number of obs
+{col 5}{hline 41}
+{col 5}Not matched{col 30}{res}               0
+{txt}{col 5}Matched{col 30}{res}         602,833{txt}  (_merge==3)
+{col 5}{hline 41}
+
+{com}. 
+. destring sex age pri_activity_status, replace
+{txt}sex: all characters numeric; {res}replaced {txt}as {res}byte
+{txt}(1 missing value generated)
+{res}{txt}age: all characters numeric; {res}replaced {txt}as {res}int
+{txt}(16 missing values generated)
+{res}{txt}pri_activity_status: all characters numeric; {res}replaced {txt}as {res}byte
+
+{com}. 
+. destring common_id, replace
+{txt}common_id: all characters numeric; {res}replaced {txt}as {res}long
+
+{com}. 
+. keep if inrange(age,15,59)
+{txt}(239,867 observations deleted)
+
+{com}. 
+. gen employed_ps = 0
+
+. 
+. replace employed_ps = 1 if inrange(pri_activity_status,11,51)
+{txt}(203,083 real changes made)
+
+{com}. 
+. //from codebook, sex=1 for male and sex=2 for female
+{bf}{err}/{sf} is not a valid command name
+{txt}{search r(199), local:r(199);}
+
+{com}. 
+. prtest employed_ps, by(sex)
+
+{txt}Two-sample test of proportions                     {res}1{txt}: Number of obs = {res}  184180
+                                                   2{txt}: Number of obs = {res}  178786
+{txt}{hline 13}{c TT}{hline 64}
+       Group{col 14}{c |}{col 22}Mean{col 29}Std. err.{col 44}z{col 49}P>|z|{col 59}[95% conf. interval]
+{hline 13}{c +}{hline 64}
+           1 {c |}{res}{col 17} .8111467{col 28}  .000912{col 58} .8093592{col 70} .8129342
+           {txt}2 {c |}{res}{col 17} .3002808{col 28} .0010841{col 58}  .298156{col 70} .3024055
+{txt}{hline 13}{c +}{hline 64}
+        diff {c |}{res}{col 17} .5108659{col 28} .0014167{col 58} .5080893{col 70} .5136425
+{txt}{col 14}{c |}{col 17}under H0:{res}{col 28} .0016482{col 38}  309.95{col 49}0.000
+{txt}{hline 13}{c BT}{hline 64}
+        diff = prop({res}1{txt}) - prop({res}2{txt})                                  z = {res}309.9488
+{txt}    H0: diff = 0
+
+    Ha: diff < 0                 Ha: diff != 0                 Ha: diff > 0
+ Pr(Z < z) = {res}1.0000         {txt}Pr(|Z| > |z|) = {res}0.0000          {txt}Pr(Z > z) = {res}0.0000
+
+{com}. 
+. 
+. 
+. *part (vi)
+
+. 
+. drop _merge
+
+. 
+. merge m:1 common_id using "level01_edited.dta"
+{res}{err}{p 0 2 2}
+variable
+{bf:state_region} is
+str3 in master but
+int in using data
+{p_end}
+{p 4 4 2}
+You could specify
+{bf:merge}'s
+{bf:force} option to ignore this
+string/numeric mismatch.  The using variable
+would then be treated as if it
+contained "".
+{p_end}
+{txt}{search r(106), local:r(106);}
+
+{com}. 
+. keep if _merge==3
+{err}_merge not found
+{txt}{search r(111), local:r(111);}
+
+{com}. 
+. 
+. 
+. tabulate employed_ps pcmpce_decile if sex==2, column chi2
+{err}variable {bf}pcmpce_decile{sf} not found
+{txt}{search r(111), local:r(111);}
+
+{com}. 
+. 
+. 
+. cd "D:\College\Spring 2022 (MA)\Econometrics\Assignment"
+{err}unable to change to D:\College\Spring 2022 (MA)\Econometrics\Assignment
+{txt}{search r(170), local:r(170);}
+
+{com}. 
+. log close HW3
+      {txt}name:  {res}HW3
+       {txt}log:  {res}D:\MA_Econ\Sem-2\Ecotrix\Assignment\NSS 61\data\HW3.smcl
+  {txt}log type:  {res}smcl
+ {txt}closed on:  {res}16 Mar 2022, 22:04:39
+{txt}{.-}
+{smcl}
+{txt}{sf}{ul off}
